@@ -6,6 +6,6 @@ canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 
 const graph = new GraphCanvas("canvas");
-// (window as any).graph = graph;
+(window as any).graph = graph;
 
 // document.body.appendChild(graph.bgCanvas);

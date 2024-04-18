@@ -90,7 +90,9 @@ export class GraphCanvas {
     ctx.strokeStyle = CANVAS_BORDER_COLOR;
     ctx.strokeRect(0, 0, canvas.width, canvas.height);
 
-    this.drawPattern(viewport);
+    if (ds.scale > 0.5) {
+      this.drawPattern(viewport);
+    }
 
     ctx.restore();
   }
@@ -98,8 +100,12 @@ export class GraphCanvas {
   drawFrontCanvas() {
     const { ctx, canvas } = this;
 
+    ctx.save();
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(this.bgCanvas, 0, 0);
+
+    ctx.restore();
   }
 
   drawPattern(viewport: [number, number, number, number]) {
@@ -123,6 +129,7 @@ export class GraphCanvas {
     }
 
     if (this.pattern) {
+      ctx.imageSmoothingEnabled = false;
       ctx.fillStyle = this.pattern;
       ctx.fillRect(...viewport);
     }

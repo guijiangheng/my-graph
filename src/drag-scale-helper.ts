@@ -28,7 +28,6 @@ export class DragScaleHelper {
     };
 
     const onMouseMove = (e: MouseEvent) => {
-      console.log("mousemove");
       this.drag(e.clientX - lastMouseX, e.clientY - lastMouseY);
       lastMouseX = e.clientX;
       lastMouseY = e.clientY;
@@ -39,7 +38,12 @@ export class DragScaleHelper {
       document.removeEventListener("mouseup", onMouseUp);
     };
 
+    const onMouseWheel = (e: WheelEvent) => {
+      this.zoom(this.scale * (1 + e.deltaY * 0.001));
+    };
+
     canvas.addEventListener("mousedown", onMouseDown);
+    canvas.addEventListener("wheel", onMouseWheel);
   }
 
   reset() {
