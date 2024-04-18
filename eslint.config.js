@@ -1,7 +1,7 @@
-import globals from "globals";
 import pluginJs from "@eslint/js";
+import eslintConfigPrettier from "eslint-config-prettier";
+import globals from "globals";
 import tseslint from "typescript-eslint";
-import eslintConfigPrettier from "eslint-eslint-prettier";
 
 export default [
   { languageOptions: { globals: globals.browser } },
