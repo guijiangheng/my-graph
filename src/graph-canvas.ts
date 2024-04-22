@@ -2,17 +2,20 @@ import { DragScaleHelper } from "./drag-scale-helper";
 import { Graph } from "./graph";
 import { GraphNode } from "./graph-node";
 
-const CLEAR_BG_COLOR = "#222";
-const CANVAS_BORDER_COLOR = "#235";
 const NODE_TEXT_SIZE = 14;
 const NODE_SUBTEXT_SIZE = 12;
 const NODE_TITLE_HEIGHT = 30;
+const NODE_TITLE_Y = 20;
 const ROUND_RADIUS = 8;
 const DOT_SIZE = 10;
-const DEFAULT_SHADOW_COLOR = "#rgba(0, 0, 0, 0.5)";
 
+const CLEAR_BG_COLOR = "#222";
+const CANVAS_BORDER_COLOR = "#235";
+const DEFAULT_BOX_COLOR = "#666";
+const DEFAULT_SHADOW_COLOR = "#rgba(0, 0, 0, 0.5)";
 const NODE_DEFAULT_COLOR = "#333";
 const NODE_DEFAULT_BGCOLOR = "#353535";
+const NODE_TITLE_COLOR = "#999";
 
 const BACKGROUND_IMAGE =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAIAAAD/gAIDAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAQBJREFUeNrs1rEKwjAUhlETUkj3vP9rdmr1Ysammk2w5wdxuLgcMHyptfawuZX4pJSWZTnfnu/lnIe/jNNxHHGNn//HNbbv+4dr6V+11uF527arU7+u63qfa/bnmh8sWLBgwYJlqRf8MEptXPBXJXa37BSl3ixYsGDBMliwFLyCV/DeLIMFCxYsWLBMwSt4Be/NggXLYMGCBUvBK3iNruC9WbBgwYJlsGApeAWv4L1ZBgsWLFiwYJmCV/AK3psFC5bBggULloJX8BpdwXuzYMGCBctgwVLwCl7Be7MMFixYsGDBsu8FH1FaSmExVfAxBa/gvVmwYMGCZbBg/W4vAQYA5tRF9QYlv/QAAAAASUVORK5CYII=";
@@ -223,10 +226,10 @@ export class GraphCanvas {
   private drawNodeShape(
     node: GraphNode,
     ctx: CanvasRenderingContext2D,
-    color: string,
+    fgColor: string,
     bgColor: string
   ) {
-    ctx.strokeStyle = color;
+    ctx.strokeStyle = fgColor;
     ctx.fillStyle = bgColor;
 
     const renderTitle = !node.flags.collapsed;
@@ -242,37 +245,35 @@ export class GraphCanvas {
       renderTitle ? height + NODE_TITLE_HEIGHT : height,
     ] as const;
 
-    // draw background
+    // full background
     ctx.beginPath();
     ctx.roundRect(...area, ROUND_RADIUS);
     ctx.fill();
 
-    // draw separator
+    // separator
     if (!node.flags.collapsed) {
       ctx.shadowColor = "transparent";
       ctx.fillStyle = "rgba(0, 0, 0, 0.2)";
       ctx.fillRect(0, -1, area[2], 2);
     }
 
-    const titleColor = (node.constructor as unknown as typeof GraphNode)
-      .titleColor;
-
-    // draw title bg
-    if (titleColor) {
-      ctx.fillStyle = titleColor;
-      ctx.beginPath();
-      ctx.roundRect(
-        0,
-        -NODE_TITLE_HEIGHT,
-        area[2],
-        NODE_TITLE_HEIGHT,
-        node.flags.collapsed ? ROUND_RADIUS : [ROUND_RADIUS, ROUND_RADIUS, 0, 0]
-      );
-      ctx.fill();
-    }
-
-    // draw title dot
+    // title bg
+    const titleColor =
+      (node.constructor as unknown as typeof GraphNode).titleColor || fgColor;
+    ctx.fillStyle = titleColor;
     ctx.beginPath();
+    ctx.roundRect(
+      0,
+      -NODE_TITLE_HEIGHT,
+      area[2],
+      NODE_TITLE_HEIGHT,
+      node.flags.collapsed ? ROUND_RADIUS : [ROUND_RADIUS, ROUND_RADIUS, 0, 0]
+    );
+    ctx.fill();
+
+    // title dot
+    ctx.beginPath();
+    ctx.fillStyle = DEFAULT_BOX_COLOR;
     ctx.arc(
       NODE_TITLE_HEIGHT * 0.5,
       -NODE_TITLE_HEIGHT * 0.5,
@@ -281,5 +282,14 @@ export class GraphCanvas {
       Math.PI * 2
     );
     ctx.fill();
+
+    // title text
+    const title = node.getTitle();
+    ctx.font = `${NODE_TEXT_SIZE}px Arial`;
+    ctx.fillStyle =
+      (node.constructor as unknown as typeof GraphNode).titleTextColor ||
+      NODE_TITLE_COLOR;
+    ctx.textAlign = "left";
+    ctx.fillText(title, NODE_TITLE_HEIGHT, NODE_TITLE_Y - NODE_TITLE_HEIGHT);
   }
 }

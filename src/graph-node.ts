@@ -12,9 +12,11 @@ interface Slot {
 }
 
 export class GraphNode {
+  static title?: string;
   static color?: string;
   static bgColor?: string;
   static titleColor?: string;
+  static titleTextColor?: string;
 
   public id = 0;
   public position: Vector2 = [0, 0];
@@ -30,7 +32,11 @@ export class GraphNode {
   private outputs: Slot[] = [];
 
   public getTitle(): string {
-    return this.title ?? this.constructor.name;
+    return (
+      this.title ??
+      (this.constructor as unknown as GraphNode).title ??
+      this.constructor.name
+    );
   }
 
   public addInput(name: string, type: string, extra?: Object) {

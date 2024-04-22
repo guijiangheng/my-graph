@@ -24,7 +24,7 @@ registerNodeType("basic/sum", SumNode);
 
 const graph = new Graph();
 
-const node = new GraphNode();
+const node = new SumNode();
 node.position = [200, 200];
 graph.add(node);
 
